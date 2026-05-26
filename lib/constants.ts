@@ -35,21 +35,27 @@ export const CONCEPT_STATUSES = [
 ] as const
 
 export const STATUS_COLORS: Record<string, string> = {
-  idea:          'bg-zinc-500/15 text-zinc-400 border-zinc-500/30',
-  briefed:       'bg-blue-500/15 text-blue-400 border-blue-500/30',
-  in_production: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-  live:          'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-  paused:        'bg-orange-500/15 text-orange-400 border-orange-500/30',
-  retired:       'bg-zinc-800/40 text-zinc-600 border-zinc-700/30',
+  idea:              'bg-zinc-500/15 text-zinc-400 border-zinc-500/30',
+  concept_confirmed: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
+  hooks_confirmed:   'bg-purple-500/15 text-purple-400 border-purple-500/30',
+  briefed:           'bg-blue-500/15 text-blue-400 border-blue-500/30',
+  in_production:     'bg-amber-500/15 text-amber-400 border-amber-500/30',
+  live:              'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+  complete:          'bg-[var(--quake)]/15 text-[var(--quake)] border-[var(--quake)]/30',
+  paused:            'bg-orange-500/15 text-orange-400 border-orange-500/30',
+  retired:           'bg-zinc-800/40 text-zinc-600 border-zinc-700/30',
 }
 
 export const STATUS_LABELS: Record<string, string> = {
-  idea:          'Idea',
-  briefed:       'Briefed',
-  in_production: 'In Production',
-  live:          'Live',
-  paused:        'Paused',
-  retired:       'Retired',
+  idea:              'Draft',
+  concept_confirmed: 'Concept',
+  hooks_confirmed:   'Hooks done',
+  briefed:           'Briefed',
+  in_production:     'In Production',
+  live:              'Live',
+  complete:          'Complete',
+  paused:            'Paused',
+  retired:           'Retired',
 }
 
 export const CAMPAIGN_LABELS: Record<string, string> = {

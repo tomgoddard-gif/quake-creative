@@ -1,26 +1,19 @@
 import Link from 'next/link'
 import { logout } from '@/lib/auth'
 import {
-  Lightbulb,
-  ClipboardList,
-  FolderOpen,
-  Library,
-  Users,
+  PenLine,
+  Clock,
   BarChart2,
+  Settings,
   LogOut,
   Zap,
 } from 'lucide-react'
 
 const mainNav = [
-  { href: '/ideas',      label: 'Ideas',      icon: Lightbulb },
-  { href: '/planning',   label: 'Planning',   icon: ClipboardList },
-  { href: '/production', label: 'Production', icon: FolderOpen },
-]
-
-const secondaryNav = [
-  { href: '/library',     label: 'Archive',     icon: Library },
-  { href: '/personas',    label: 'Personas',    icon: Users },
-  { href: '/performance', label: 'Performance', icon: BarChart2 },
+  { href: '/plan',     label: 'Plan',     icon: PenLine },
+  { href: '/history',  label: 'History',  icon: Clock },
+  { href: '/insights', label: 'Insights', icon: BarChart2 },
+  { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -37,7 +30,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-2 py-4 space-y-4">
+        <nav className="flex-1 overflow-y-auto px-2 py-4">
           <div className="space-y-0.5">
             {mainNav.map(item => (
               <Link
@@ -49,24 +42,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 {item.label}
               </Link>
             ))}
-          </div>
-
-          <div>
-            <p className="px-3 mb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50">
-              More
-            </p>
-            <div className="space-y-0.5">
-              {secondaryNav.map(item => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
-                </Link>
-              ))}
-            </div>
           </div>
         </nav>
 

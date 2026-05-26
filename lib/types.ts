@@ -1,13 +1,27 @@
 export type UserRole = 'admin' | 'client'
 
-export type ConceptStatus = 'idea' | 'briefed' | 'in_production' | 'live' | 'paused' | 'retired'
-export type BriefStatus = 'draft' | 'awaiting_approval' | 'approved' | 'rejected'
+export type ConceptStatus =
+  | 'idea'
+  | 'concept_confirmed'
+  | 'hooks_confirmed'
+  | 'briefed'
+  | 'in_production'
+  | 'live'
+  | 'paused'
+  | 'retired'
+  | 'complete'
 
+export type BriefStatus = 'draft' | 'awaiting_approval' | 'approved' | 'rejected'
+export type FunnelStage = 'tofu' | 'mofu' | 'bofu'
+export type EntryPoint = 'guided' | 'icp_first' | 'idea_first'
+
+// ─── AI helpers ────────────────────────────────────────────────────────────
 export interface AIOption {
   content: string
   rationale: string
 }
 
+// ─── ICP / Persona ─────────────────────────────────────────────────────────
 export interface Persona {
   id: string
   name: string
@@ -25,95 +39,96 @@ export interface Persona {
   created_at: string
 }
 
-export interface CreativeVariant {
+// ─── Chat messages (Stage 1) ────────────────────────────────────────────────
+export interface Message {
+  id: string
+  concept_id: string
+  role: 'user' | 'assistant'
+  content: string
+  created_at: string
+}
+
+// ─── Hook (Stage 2) ────────────────────────────────────────────────────────
+export interface Hook {
   id: string
   concept_id: string
   hook_type: string | null
-  hook_line: string | null
-  hook_text_overlay: string | null
-  format: string | null
-  platform: string | null
-  duration_seconds: number | null
-  language: string
-  notes: string | null
+  written_hook: string | null
+  visual_hook: string | null
+  audio_hook: string | null
+  confirmed: boolean
   sort_order: number
   created_at: string
-  updated_at: string
 }
 
-export interface ConceptIdea {
-  selected_insight?: string | null
-  selected_angle?: string | null
-  selected_hook?: string | null
-}
-
+// ─── Concept ────────────────────────────────────────────────────────────────
 export interface Concept {
   id: string
   title: string
   persona_id: string | null
+  icp_id: string | null
+  entry_point: EntryPoint | null
+  insight: string | null
+  angle_pain: string | null
+  angle_desire: string | null
+  core_message: string | null
+  plan_stage: number
+  idea_seed: string | null
   campaign: string | null
+  funnel_stage: FunnelStage | null
   platforms: string[] | null
   hook_type: string | null
   angle_type: string | null
   test_axis: string | null
   status: ConceptStatus
-  funnel_stage?: FunnelStage | null
   notes: string | null
   created_at: string
   updated_at: string
+  // joins
   persona?: Persona | null
   meta_performance?: MetaPerformance | null
-  variants?: CreativeVariant[]
-  idea?: ConceptIdea | null
+  hooks?: Hook[]
 }
 
-export interface Idea {
-  id: string
-  concept_id: string
-  selected_insight: string | null
-  selected_angle: string | null
-  selected_hook: string | null
-  insight_options: AIOption[] | null
-  angle_options: AIOption[] | null
-  hook_options: AIOption[] | null
-  current_step: number
-  created_at: string
-  updated_at: string
-}
-
+// ─── Brief (V2) ────────────────────────────────────────────────────────────
 export interface Brief {
   id: string
   concept_id: string
+  hook_id: string | null
+  funnel_stage: FunnelStage | null
+  format: string | null
+  platform: string | null
+  primary_text: string | null
+  headline: string | null
+  cta_text: string | null
+  creative_idea: string | null
+  talent_notes: string | null
+  audio_direction: string | null
+  placement_specs: string | null
+  // legacy fields kept for compatibility
   persona_id: string | null
   insight: string | null
   angle: string | null
   hook: string | null
   hook_type: string | null
-  angle_type: string | null
   key_message: string | null
-  call_to_action: string | null
-  visual_direction: string | null
-  copy_notes: string | null
-  format: string | null
-  duration_seconds: number | null
-  platform: string | null
-  shot_list: unknown | null
-  audio_strategy: string | null
-  talent_notes: string | null
-  language_variants: unknown | null
-  why_it_works: string | null
-  production_notes: string | null
   status: BriefStatus
-  client_comment: string | null
-  approved_by: string | null
-  approved_at: string | null
-  ad_id: string | null
-  live_date: string | null
   created_at: string
   updated_at: string
-  concept?: Concept
+  // joins
+  hook_data?: Hook | null
+  concept?: Concept | null
 }
 
+// ─── App settings ───────────────────────────────────────────────────────────
+export interface AppSettings {
+  id: string
+  product_knowledge: string | null
+  guardrails: string | null
+  updated_at: string
+}
+
+// ─── Meta performance ───────────────────────────────────────────────────────
 export interface MetaPerformance {
   id: string
   ad_id: string
@@ -129,9 +144,22 @@ export interface MetaPerformance {
   last_synced: string
 }
 
-export type WizardStep = 1 | 2 | 3 | 4 | 5 | 6
-
-export type FunnelStage = 'tof' | 'mof' | 'bof'
+// ─── Legacy (kept for old components still in codebase) ─────────────────────
+export interface CreativeVariant {
+  id: string
+  concept_id: string
+  hook_type: string | null
+  hook_line: string | null
+  hook_text_overlay: string | null
+  format: string | null
+  platform: string | null
+  duration_seconds: number | null
+  language: string
+  notes: string | null
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
 
 export interface IdeaSummary {
   title: string

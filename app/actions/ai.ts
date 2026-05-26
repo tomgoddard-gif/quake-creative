@@ -206,9 +206,9 @@ export async function generateIdeaList(
   funnelStage: FunnelStage,
 ): Promise<IdeaSummary[] | null> {
   const stageContext: Record<FunnelStage, string> = {
-    tof: 'Top of Funnel — awareness, cold audiences who have never heard of Quake. Goal: pattern interrupt and create curiosity.',
-    mof: 'Middle of Funnel — consideration, warm audiences who have seen Quake before. Goal: address objections, build desire, show social proof.',
-    bof: 'Bottom of Funnel — conversion, hot leads who are in Lisbon or planning to visit. Goal: urgency, specific value, remove friction to book.',
+    tofu: 'Top of Funnel — awareness, cold audiences who have never heard of Quake. Goal: pattern interrupt and create curiosity.',
+    mofu: 'Middle of Funnel — consideration, warm audiences who have seen Quake before. Goal: address objections, build desire, show social proof.',
+    bofu: 'Bottom of Funnel — conversion, hot leads who are in Lisbon or planning to visit. Goal: urgency, specific value, remove friction to book.',
   }
 
   const prompt = `${QUAKE_CONTEXT}

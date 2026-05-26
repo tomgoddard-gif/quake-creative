@@ -17,19 +17,19 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6
 
 const FUNNEL_STAGES: { key: FunnelStage; label: string; name: string; desc: string }[] = [
   {
-    key: 'tof',
+    key: 'tofu',
     label: 'TOF',
     name: 'Top of Funnel',
     desc: 'Awareness — cold audiences who don\'t know Quake yet',
   },
   {
-    key: 'mof',
+    key: 'mofu',
     label: 'MOF',
     name: 'Middle of Funnel',
     desc: 'Consideration — warm audiences who\'ve seen us before',
   },
   {
-    key: 'bof',
+    key: 'bofu',
     label: 'BOF',
     name: 'Bottom of Funnel',
     desc: 'Conversion — hot leads ready to book',
@@ -37,9 +37,9 @@ const FUNNEL_STAGES: { key: FunnelStage; label: string; name: string; desc: stri
 ]
 
 const FUNNEL_CONTEXT: Record<FunnelStage, string> = {
-  tof: 'Top of Funnel (awareness, cold audiences)',
-  mof: 'Middle of Funnel (consideration, warm retargeting)',
-  bof: 'Bottom of Funnel (conversion, hot leads)',
+  tofu: 'Top of Funnel (awareness, cold audiences)',
+  mofu: 'Middle of Funnel (consideration, warm retargeting)',
+  bofu: 'Bottom of Funnel (conversion, hot leads)',
 }
 
 const TEST_AXES = ['Emotional', 'Social Proof', 'Problem-Solution', 'Revelation', 'Identity']

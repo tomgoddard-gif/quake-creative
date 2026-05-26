@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const ADMIN_ROUTES = [
+  '/plan',
+  '/history',
+  '/insights',
+  '/settings',
+  // legacy routes (kept for backward compatibility)
   '/ideas',
   '/planning',
   '/production',
@@ -39,7 +44,7 @@ export function proxy(request: NextRequest) {
   }
 
   if (role === 'admin' && CLIENT_ROUTES.some(r => pathname.startsWith(r))) {
-    return NextResponse.redirect(new URL('/ideas', request.url))
+    return NextResponse.redirect(new URL('/plan', request.url))
   }
 
   return NextResponse.next()
