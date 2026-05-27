@@ -5,7 +5,7 @@ export async function getConcepts(): Promise<Concept[]> {
   const supabase = createServerClient()
   const { data, error } = await supabase
     .from('concepts')
-    .select('*, persona:personas(*), meta_performance(*)')
+    .select('*, persona:personas!concepts_persona_id_fkey(*), meta_performance(*)')
     .order('id')
   if (error) throw error
   return (data ?? []) as Concept[]
@@ -15,7 +15,7 @@ export async function getConceptById(id: string): Promise<Concept | null> {
   const supabase = createServerClient()
   const { data } = await supabase
     .from('concepts')
-    .select('*, persona:personas(*), meta_performance(*), idea:ideas(*)')
+    .select('*, persona:personas!concepts_persona_id_fkey(*), meta_performance(*)')
     .eq('id', id)
     .single()
   return data as Concept | null
