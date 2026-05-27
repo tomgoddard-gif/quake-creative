@@ -26,7 +26,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <div>
             <p className="text-xs font-semibold leading-none">Quake Creative</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">Accelerate</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Accelerate · <span className="text-[var(--quake)]">v3.0</span></p>
           </div>
         </div>
 
