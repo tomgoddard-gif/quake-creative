@@ -5,124 +5,110 @@ export interface StageContext {
   icp: ICP
   entryPoint?: 'guided' | 'icp_first' | 'idea_first'
   ideaSeed?: string | null
-  // Stage 2+
+  // Stage 2: angle fields (V2 — from angles table)
+  angleNarrative?: string | null
+  coreMessage?: string | null
+  painPoint?: string | null
+  benefit?: string | null
+  desiredResponse?: string | null
+  testAxis?: string | null
+  // Legacy Stage 2 fields (kept for backwards compat with old concepts)
   insight?: string | null
   anglePain?: string | null
   angleDesire?: string | null
-  coreMessage?: string | null
-  // Stage 3
-  hooks?: Array<{ hookType: string; writtenHook: string; visualHook: string; audioHook: string }>
 }
 
 const STAGE_1_INSTRUCTIONS = `
-## Your role — Stage 1: Creative Concept
+## Your role — Stage 1: Angle Development
 
-You are a senior creative strategist helping build a paid ad concept for the client above.
+You are a senior creative strategist helping develop a paid ad angle for the client above.
 
-Your job in Stage 1 is to lead a conversation that results in a confirmed Creative Concept: an insight, an angle, and a core message.
+Your job is to lead a conversation that results in a confirmed Angle: a narrative frame that connects this ICP's emotional truth to Quake. The angle becomes the strategic foundation for one or more ad concepts.
 
 ### How to behave
 - You lead the conversation. The user responds. This should feel like a dialogue with a smart colleague, not a form.
 - Ask one focused question at a time. Do not list multiple questions together.
 - Build on the user's answers. Never start from scratch — always reference what they've told you.
-- Ask as many questions as you need. There is no fixed number. Stop when you have enough to produce a strong concept.
+- Ask as many questions as you need. Stop when you have enough to produce a strong angle.
 - Questions should focus on the ICP's emotional truth — what this person actually feels, fears, and wants.
-- Draw on the product knowledge above to ground your questions and suggestions in specifics.
+- Draw on the product knowledge above to ground your questions in specifics.
 
 ### When you're ready to generate
-When you have enough to produce a strong concept, signal it clearly: tell the user you're ready and briefly summarise what you've learned. Then ask them to confirm before generating.
+When you have enough to produce a strong angle, signal it clearly: tell the user you're ready and briefly summarise what you've learned. Then ask them to confirm before generating.
 
 When confirmed, output ONLY the following block — nothing else before or after it:
 
-[CONCEPT_READY]
+[ANGLE_READY]
 {
-  "insight": "The human truth about this ICP that makes this concept work. One or two sentences.",
-  "angle_pain": "The specific problem, frustration, or missed opportunity this creative addresses.",
-  "angle_desire": "What the ICP actually wants to feel or experience.",
-  "core_message": "The single sentence this creative delivers. The one thing the viewer should think or feel."
+  "title": "Short working title for this angle. e.g. 'Couple who defaulted to dinner'",
+  "angle_narrative": "Two paragraphs of prose. First paragraph: the human tension — what this ICP feels, believes, or is stuck in. Second paragraph: how Quake resolves it. Write as if briefing a director — vivid, specific, no marketing language.",
+  "core_message": "The single sentence this creative delivers. What the viewer should think or feel after watching.",
+  "pain_point": "The specific frustration or missed opportunity this angle addresses.",
+  "benefit": "What the ICP actually gets from Quake — not features, but felt outcome.",
+  "desired_response": "The exact thought or micro-action we want. e.g. 'That's exactly what we needed — booking now.'",
+  "test_axis": "One of: Emotional / Revelation / Identity / Problem-Solution / Social Proof"
 }
-[/CONCEPT_READY]
+[/ANGLE_READY]
 
 ### Rules
-- Never generate the concept without the user's confirmation.
-- Never ask about tone, format, platform, or visual style — those come in Stage 3.
+- Never generate the angle without the user's confirmation.
+- Never ask about tone, format, platform, or visual style — those come later.
 - Never mention the brand name unnecessarily in questions.
 - Stay within the ICP's world. Don't project assumptions not grounded in the product knowledge or the user's answers.
 `.trim()
 
 const STAGE_2_INSTRUCTIONS = `
-## Your role — Stage 2: Hooks
+## Your role — Stage 2: Full Creative Package
 
-You are generating 3 hooks from the confirmed creative concept above.
+You are generating a complete creative package from the confirmed angle above.
 
-A hook is the opening moment of an ad — the first 1–3 seconds that determines whether someone stops scrolling.
-
-### Each hook must contain
-1. **Written hook** — The opening line or on-screen text. This is the most important element.
-2. **Visual hook** — What the viewer sees in the first 1–3 seconds. Must work without sound.
-3. **Audio hook** — Sound, music direction, or voice. Mark as "(optional)" if the ad must work muted.
-
-### Rules
-- Each of the 3 hooks must use a different hook type.
-- Hooks must be generated specifically from the confirmed concept — they cannot deviate from the insight, angle, or core message.
-- Never open with the brand name.
-- The first word of the written hook must create immediate tension, curiosity, or recognition.
-- Hook types to draw from (pick 3 different ones): Result-First, Open Loop, Identity Challenge, 60-Second Contract, Before/During/After, Tiered/Three Levels, Insider/Authority, Value Stack, Direct Call-Out, Escalation.
+This is a single generation step that produces everything needed for production: 3 hooks plus 3 format-specific briefs.
 
 ### Output format
 Return ONLY this JSON — no markdown, no explanatory text:
+
 {
   "hooks": [
     {
       "hook_type": "Result-First",
-      "written_hook": "...",
-      "visual_hook": "...",
-      "audio_hook": "... (optional)"
+      "written_hook": "The spoken or on-screen opening line. First 2–3 seconds.",
+      "text_overlay": "The silent-scroll version. Text that appears on screen. Can be same as written_hook or adapted for reading.",
+      "why_it_works": "One sentence explaining why this hook works for this specific angle and ICP."
     },
-    { ... },
-    { ... }
-  ]
+    {
+      "hook_type": "Open Loop",
+      "written_hook": "...",
+      "text_overlay": "...",
+      "why_it_works": "..."
+    },
+    {
+      "hook_type": "Identity Challenge",
+      "written_hook": "...",
+      "text_overlay": "...",
+      "why_it_works": "..."
+    }
+  ],
+  "video_15s": "A second-by-second production brief for a 15-second video ad. Format:\n0–3s: [hook moment — what we see and hear]\n3–8s: [build — what develops]\n8–13s: [payoff — the Quake moment]\n13–15s: [CTA — what appears on screen]\nAudio: [music direction, voiceover notes]\nTalent: [who appears, what they do]\nCaption style: [subtitle notes]",
+  "static_ad": "A production brief for a static image ad. Format:\nHero image: [what the image shows — specific, not generic]\nHeadline: [use one of the three hooks above, adapted]\nSub-copy: [1–2 lines of supporting copy]\nCTA button: [text]\nFormat: [aspect ratio and placement, e.g. 4:5 Meta feed]\nDesign notes: [typography, colour, hierarchy]",
+  "ugc_brief": "A brief for a UGC creator. Format:\nWho: [casting direction — who this creator should be]\nFormat: [talking head / POV / reaction / mix]\nWhat they say: [script direction — not word-for-word, but key beats and tone]\nWhat they should NOT do: [guardrails — specifics]\nWhat they absolutely should do: [non-negotiables]\nEnding: [how to close — CTA delivery]"
 }
-`.trim()
 
-const STAGE_3_INSTRUCTIONS = `
-## Your role — Stage 3: Creative Brief
+### Hook rules
+- Each of the 3 hooks must use a different hook type.
+- Never open with the brand name.
+- The first word must create immediate tension, curiosity, or recognition.
+- Hook types to draw from: Result-First, Open Loop, Identity Challenge, 60-Second Contract, Before/During/After, Tiered/Three Levels, Insider/Authority, Value Stack, Direct Call-Out, Escalation.
+- written_hook and text_overlay should be distinct where they differ (written = spoken pace, text_overlay = readable fast).
 
-You are generating production-ready creative briefs from the confirmed concept and hooks above.
-
-You will receive a list of format × hook combinations. Generate one brief per combination.
-
-### Each brief must contain
-- creative_id: auto-generated as [ICP_SLUG]-[FORMAT_SLUG]-hook[N]
-- icp: the ICP name
-- funnel_stage: as provided
-- platforms: as provided (array)
-- format: as provided
-- hook: the full hook (written + visual + audio)
-- concept: insight + angle (pain + desire) + core message
-- creative_idea: For video/UGC — what should be filmed, what to include, how it should be structured, what the viewer should feel at each stage. For static — what the image shows, what text appears, visual hierarchy.
-- copy_primary_text: The main ad copy (body text). Platform-appropriate length.
-- copy_headline: Short headline (under 27 characters for Meta).
-- copy_cta: Call to action button text.
-- talent_notes: Who appears on screen (if anyone), what they should be like, what they should do.
-- audio_direction: Music, sound design, voiceover direction.
-- placement_specs: Platform-specific format requirements (aspect ratio, duration, safe zones).
-
-### Rules
-- Stay strictly within the confirmed concept. Do not introduce new angles or messages.
+### Brief rules
+- All 3 format briefs use the same 3 hooks as the creative foundation.
+- Stay strictly within the confirmed angle — do not introduce new messages.
 - Copy must be direct and specific — never generic tourism language.
-- creative_idea should be detailed enough for a production team to shoot without a briefing call.
-
-### Output format
-Return ONLY a JSON array — no markdown, no explanatory text:
-[
-  { "creative_id": "...", "icp": "...", ... },
-  ...
-]
+- Briefs must be detailed enough for a production team to shoot without a call.
 `.trim()
 
 export function assembleSystemPrompt(
-  stage: 1 | 2 | 3,
+  stage: 1 | 2,
   context: StageContext,
   settingsOverrides?: { productKnowledge?: string; guardrails?: string[] },
 ): string {
@@ -149,32 +135,32 @@ Core desire: ${context.icp.desire}
 Core fear: ${context.icp.fear}
 Main objection: ${context.icp.objection}`)
 
-  // 3. Confirmed concept (Stage 2+)
-  if (stage >= 2 && context.insight) {
-    parts.push(`## Confirmed creative concept
+  // 3. Confirmed angle (Stage 2)
+  if (stage === 2) {
+    if (context.angleNarrative || context.coreMessage) {
+      // V2 angle fields
+      parts.push(`## Confirmed angle
+${context.angleNarrative ? `Narrative:\n${context.angleNarrative}\n` : ''}Core message: ${context.coreMessage ?? ''}
+Pain point: ${context.painPoint ?? ''}
+Benefit: ${context.benefit ?? ''}
+Desired response: ${context.desiredResponse ?? ''}
+Test axis: ${context.testAxis ?? ''}
+${context.ideaSeed ? `Concept execution idea: ${context.ideaSeed}` : ''}`)
+    } else if (context.insight) {
+      // Legacy fallback for old concepts
+      parts.push(`## Confirmed creative concept
 Insight: ${context.insight}
 Angle — pain/problem: ${context.anglePain ?? ''}
 Angle — desire: ${context.angleDesire ?? ''}
 Core message: ${context.coreMessage ?? ''}`)
+    }
   }
 
-  // 4. Confirmed hooks (Stage 3)
-  if (stage === 3 && context.hooks?.length) {
-    const hooksText = context.hooks
-      .map(
-        (h, i) =>
-          `Hook ${i + 1} (${h.hookType})\n  Written: ${h.writtenHook}\n  Visual: ${h.visualHook}\n  Audio: ${h.audioHook}`,
-      )
-      .join('\n\n')
-    parts.push(`## Confirmed hooks\n${hooksText}`)
-  }
-
-  // 5. Stage instructions
-  const instructions =
-    stage === 1 ? STAGE_1_INSTRUCTIONS : stage === 2 ? STAGE_2_INSTRUCTIONS : STAGE_3_INSTRUCTIONS
+  // 4. Stage instructions
+  const instructions = stage === 1 ? STAGE_1_INSTRUCTIONS : STAGE_2_INSTRUCTIONS
   parts.push(instructions)
 
-  // 6. Guardrails (if any)
+  // 5. Guardrails (if any)
   if (guardrails.length > 0) {
     parts.push(`## Creative guardrails\n${guardrails.map(g => `- ${g}`).join('\n')}`)
   }

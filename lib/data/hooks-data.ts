@@ -17,8 +17,10 @@ export async function upsertHooks(
   hooks: Array<{
     hook_type: string
     written_hook: string
-    visual_hook: string
-    audio_hook: string
+    text_overlay?: string
+    why_it_works?: string
+    visual_hook?: string
+    audio_hook?: string
   }>,
 ): Promise<Hook[]> {
   const supabase = createServerClient()
@@ -28,8 +30,10 @@ export async function upsertHooks(
     concept_id: conceptId,
     hook_type: h.hook_type,
     written_hook: h.written_hook,
-    visual_hook: h.visual_hook,
-    audio_hook: h.audio_hook,
+    text_overlay: h.text_overlay ?? null,
+    why_it_works: h.why_it_works ?? null,
+    visual_hook: h.visual_hook ?? null,
+    audio_hook: h.audio_hook ?? null,
     confirmed: false,
     sort_order: i,
   }))
@@ -40,7 +44,7 @@ export async function upsertHooks(
 
 export async function updateHook(
   hookId: string,
-  fields: Partial<Pick<Hook, 'hook_type' | 'written_hook' | 'visual_hook' | 'audio_hook' | 'confirmed'>>,
+  fields: Partial<Pick<Hook, 'hook_type' | 'written_hook' | 'text_overlay' | 'why_it_works' | 'visual_hook' | 'audio_hook' | 'confirmed'>>,
 ): Promise<Hook> {
   const supabase = createServerClient()
   const { data, error } = await supabase

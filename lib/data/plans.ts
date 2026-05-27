@@ -15,7 +15,7 @@ export async function getConceptById(id: string): Promise<Concept | null> {
   const supabase = createServerClient()
   const { data } = await supabase
     .from('concepts')
-    .select('*, meta_performance(*), hooks(*)')
+    .select('*, meta_performance(*), hooks(*), angle:angles(*)')
     .eq('id', id)
     .single()
   return data as Concept | null
@@ -57,6 +57,7 @@ export async function updateConceptStatus(id: string, status: ConceptStatus): Pr
 export async function saveConceptFields(
   id: string,
   fields: {
+    angle_id?: string
     insight?: string
     angle_pain?: string
     angle_desire?: string

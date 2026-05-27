@@ -2,30 +2,33 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { sendMessageAction, sendInitialMessageAction, confirmConceptAction } from '@/app/actions/plan'
+import { sendMessageAction, sendInitialMessageAction } from '@/app/actions/plan'
+import { confirmAngleAction, type AngleDraftFields } from '@/app/actions/angles'
 import { Send, CheckCircle, ChevronRight } from 'lucide-react'
 import type { Message, Concept } from '@/lib/types'
 
-interface ConceptDraft {
-  insight: string
-  angle_pain: string
-  angle_desire: string
+interface AngleDraft {
+  title: string
+  angle_narrative: string
   core_message: string
+  pain_point: string
+  benefit: string
+  desired_response: string
+  test_axis: string
 }
 
-function parseConceptReady(text: string): ConceptDraft | null {
-  const match = text.match(/\[CONCEPT_READY\]([\s\S]*?)\[\/CONCEPT_READY\]/)
+function parseAngleReady(text: string): AngleDraft | null {
+  const match = text.match(/\[ANGLE_READY\]([\s\S]*?)\[\/ANGLE_READY\]/)
   if (!match) return null
   try {
-    return JSON.parse(match[1].trim()) as ConceptDraft
+    return JSON.parse(match[1].trim()) as AngleDraft
   } catch {
     return null
   }
 }
 
 function cleanMessageText(text: string): string {
-  // Remove the [CONCEPT_READY]...[/CONCEPT_READY] block from displayed text
-  return text.replace(/\[CONCEPT_READY\][\s\S]*?\[\/CONCEPT_READY\]/, '').trim()
+  return text.replace(/\[ANGLE_READY\][\s\S]*?\[\/ANGLE_READY\]/, '').trim()
 }
 
 export function ConceptChat({
@@ -40,18 +43,18 @@ export function ConceptChat({
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [initializing, setInitializing] = useState(false)
-  const [conceptDraft, setConceptDraft] = useState<ConceptDraft | null>(null)
+  const [angleDraft, setAngleDraft] = useState<AngleDraft | null>(null)
   const [confirming, setConfirming] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  // Check existing messages for concept ready signal
+  // Check existing messages for angle ready signal
   useEffect(() => {
     for (const msg of messages) {
       if (msg.role === 'assistant') {
-        const draft = parseConceptReady(msg.content)
+        const draft = parseAngleReady(msg.content)
         if (draft) {
-          setConceptDraft(draft)
+          setAngleDraft(draft)
           break
         }
       }
@@ -72,8 +75,8 @@ export function ConceptChat({
             created_at: new Date().toISOString(),
           }
           setMessages([aiMsg])
-          const draft = parseConceptReady(response.content)
-          if (draft) setConceptDraft(draft)
+          const draft = parseAngleReady(response.content)
+          if (draft) setAngleDraft(draft)
         })
         .catch(console.error)
         .finally(() => setInitializing(false))
@@ -82,7 +85,7 @@ export function ConceptChat({
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, conceptDraft])
+  }, [messages, angleDraft])
 
   async function handleSend() {
     const text = input.trim()
@@ -109,8 +112,8 @@ export function ConceptChat({
         created_at: new Date().toISOString(),
       }
       setMessages(prev => [...prev, aiMsg])
-      const draft = parseConceptReady(response.content)
-      if (draft) setConceptDraft(draft)
+      const draft = parseAngleReady(response.content)
+      if (draft) setAngleDraft(draft)
     } catch (err) {
       console.error(err)
     } finally {
@@ -119,11 +122,11 @@ export function ConceptChat({
     }
   }
 
-  async function handleConfirmConcept() {
-    if (!conceptDraft) return
+  async function handleConfirmAngle() {
+    if (!angleDraft || !concept.angle_id) return
     setConfirming(true)
     try {
-      await confirmConceptAction(concept.id, conceptDraft)
+      await confirmAngleAction(concept.angle_id, concept.id, angleDraft as AngleDraftFields)
       router.refresh()
     } catch (err) {
       console.error(err)
@@ -142,8 +145,8 @@ export function ConceptChat({
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="px-6 py-4 border-b border-border shrink-0">
-        <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Stage 1 — Concept</p>
-        <p className="text-sm font-semibold mt-0.5">Developing the creative concept</p>
+        <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Stage 1 — Angle</p>
+        <p className="text-sm font-semibold mt-0.5">Developing the creative angle</p>
       </div>
 
       {/* Messages */}
@@ -197,25 +200,54 @@ export function ConceptChat({
           </div>
         )}
 
-        {/* Concept Draft Card */}
-        {conceptDraft && (
+        {/* Angle Draft Card */}
+        {angleDraft && (
           <div className="rounded-xl border border-[var(--quake)]/30 bg-[var(--quake)]/5 p-5 space-y-4">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-[var(--quake)]" />
-              <p className="text-sm font-semibold text-[var(--quake)]">Concept ready</p>
+              <p className="text-sm font-semibold text-[var(--quake)]">Angle ready</p>
+              {angleDraft.test_axis && (
+                <span className="ml-auto rounded-full border border-[var(--quake)]/30 px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-[var(--quake)]">
+                  {angleDraft.test_axis}
+                </span>
+              )}
             </div>
-            <div className="space-y-3">
-              <Field label="Insight" value={conceptDraft.insight} />
-              <Field label="Angle — pain" value={conceptDraft.angle_pain} />
-              <Field label="Angle — desire" value={conceptDraft.angle_desire} />
-              <Field label="Core message" value={conceptDraft.core_message} highlight />
+
+            {/* Title */}
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60">Title</p>
+              <p className="text-sm font-semibold mt-0.5">{angleDraft.title}</p>
             </div>
+
+            {/* Angle narrative — prose block */}
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60 mb-1.5">Angle narrative</p>
+              <div className="text-sm text-muted-foreground leading-relaxed space-y-2 border-l-2 border-[var(--quake)]/20 pl-3">
+                {angleDraft.angle_narrative.split('\n\n').map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+              </div>
+            </div>
+
+            {/* Core message — highlighted */}
+            <div className="rounded-lg bg-[var(--quake)]/10 border border-[var(--quake)]/20 px-4 py-3">
+              <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--quake)]/70 mb-1">Core message</p>
+              <p className="text-sm font-semibold leading-snug">{angleDraft.core_message}</p>
+            </div>
+
+            {/* Structured fields */}
+            <div className="grid gap-3 sm:grid-cols-3">
+              <Field label="Pain point" value={angleDraft.pain_point} />
+              <Field label="Benefit" value={angleDraft.benefit} />
+              <Field label="Desired response" value={angleDraft.desired_response} />
+            </div>
+
             <button
-              onClick={handleConfirmConcept}
-              disabled={confirming}
+              onClick={handleConfirmAngle}
+              disabled={confirming || !concept.angle_id}
               className="mt-2 w-full flex items-center justify-center gap-2 rounded-lg bg-[var(--quake)] px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
             >
-              {confirming ? 'Confirming…' : 'Confirm concept — generate hooks'}
+              {confirming ? 'Confirming…' : 'Confirm angle — generate creative package'}
               {!confirming && <ChevronRight className="h-4 w-4" />}
             </button>
           </div>
@@ -232,14 +264,14 @@ export function ConceptChat({
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            disabled={loading || initializing || !!conceptDraft}
-            placeholder={conceptDraft ? 'Concept confirmed — proceed to hooks above' : 'Reply…'}
+            disabled={loading || initializing || !!angleDraft}
+            placeholder={angleDraft ? 'Angle confirmed — proceed above' : 'Reply…'}
             rows={2}
             className="flex-1 resize-none rounded-xl border border-border bg-card/50 px-4 py-2.5 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-[var(--quake)]/40 disabled:opacity-40"
           />
           <button
             onClick={handleSend}
-            disabled={!input.trim() || loading || initializing || !!conceptDraft}
+            disabled={!input.trim() || loading || initializing || !!angleDraft}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--quake)] text-white transition-opacity hover:opacity-90 disabled:opacity-40"
           >
             <Send className="h-4 w-4" />
@@ -251,13 +283,11 @@ export function ConceptChat({
   )
 }
 
-function Field({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60">{label}</p>
-      <p className={`text-sm mt-0.5 leading-relaxed ${highlight ? 'font-medium text-foreground' : 'text-muted-foreground'}`}>
-        {value}
-      </p>
+      <p className="text-xs mt-0.5 leading-relaxed text-muted-foreground">{value}</p>
     </div>
   )
 }

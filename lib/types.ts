@@ -39,6 +39,26 @@ export interface Persona {
   created_at: string
 }
 
+// ─── Angle ─────────────────────────────────────────────────────────────────
+export interface Angle {
+  id: string
+  icp_id: string | null
+  title: string
+  angle_narrative: string | null
+  core_message: string | null
+  pain_point: string | null
+  benefit: string | null
+  desired_response: string | null
+  test_axis: string | null
+  angle_type: string | null
+  status: 'draft' | 'confirmed'
+  created_at: string
+  updated_at: string
+  // joins
+  icp?: Persona | null
+  concepts?: Concept[]
+}
+
 // ─── Chat messages (Stage 1) ────────────────────────────────────────────────
 export interface Message {
   id: string
@@ -54,6 +74,8 @@ export interface Hook {
   concept_id: string
   hook_type: string | null
   written_hook: string | null
+  text_overlay: string | null
+  why_it_works: string | null
   visual_hook: string | null
   audio_hook: string | null
   confirmed: boolean
@@ -72,6 +94,7 @@ export interface Concept {
   angle_pain: string | null
   angle_desire: string | null
   core_message: string | null
+  angle_id: string | null
   plan_stage: number
   idea_seed: string | null
   campaign: string | null
@@ -88,6 +111,7 @@ export interface Concept {
   persona?: Persona | null
   meta_performance?: MetaPerformance | null
   hooks?: Hook[]
+  angle?: Angle | null
 }
 
 // ─── Brief (V2) ────────────────────────────────────────────────────────────

@@ -1,12 +1,12 @@
 'use server'
 
 import Anthropic from '@anthropic-ai/sdk'
-import { redirect } from 'next/navigation'
-import { createConcept as dbCreateConcept, saveConceptFields, getConceptById } from '@/lib/data/plans'
+import { getConceptById } from '@/lib/data/plans'
 import { getMessages, addMessage } from '@/lib/data/messages'
 import { assembleSystemPrompt } from '@/lib/system-prompt'
 import { quakeConfig } from '@/lib/client-config/quake'
 import { getAppSettings } from '@/lib/data/settings'
+import { createAngleAction } from '@/app/actions/angles'
 import type { EntryPoint } from '@/lib/types'
 
 function getAnthropicClient(): Anthropic {
@@ -16,13 +16,13 @@ function getAnthropicClient(): Anthropic {
   return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 }
 
+// Delegates to createAngleAction — creates angle + concept and redirects
 export async function createConceptAction(params: {
   icp_id: string
   entry_point: EntryPoint
   idea_seed?: string
 }): Promise<never> {
-  const id = await dbCreateConcept(params)
-  redirect(`/plan/${id}`)
+  return createAngleAction(params)
 }
 
 export async function sendMessageAction(
@@ -155,21 +155,3 @@ export async function sendInitialMessageAction(
   return { role: 'assistant', content: assistantText }
 }
 
-export async function confirmConceptAction(
-  conceptId: string,
-  fields: {
-    insight: string
-    angle_pain: string
-    angle_desire: string
-    core_message: string
-  },
-): Promise<void> {
-  // Derive a title from the core message
-  const title = fields.core_message.slice(0, 60)
-  await saveConceptFields(conceptId, {
-    ...fields,
-    title,
-    status: 'concept_confirmed',
-    plan_stage: 2,
-  })
-}

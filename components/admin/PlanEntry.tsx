@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createConceptAction } from '@/app/actions/plan'
+import { createAngleAction } from '@/app/actions/angles'
 import { quakeConfig } from '@/lib/client-config/quake'
 import { MessageSquare, Lightbulb, Users, ChevronRight, X } from 'lucide-react'
 import type { EntryPoint } from '@/lib/types'
@@ -49,7 +49,7 @@ export function PlanEntry() {
     if (!entryPoint) return
     setLoading(true)
     try {
-      await createConceptAction({
+      await createAngleAction({
         icp_id: icpId,
         entry_point: entryPoint,
         idea_seed: seed,

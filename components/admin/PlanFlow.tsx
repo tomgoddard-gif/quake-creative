@@ -1,17 +1,15 @@
 'use client'
 
 import { ConceptChat } from './ConceptChat'
-import { HooksPanel } from './HooksPanel'
-import { BriefBuilder } from './BriefBuilder'
+import { CreativePackage } from './CreativePackage'
 import { quakeConfig } from '@/lib/client-config/quake'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import type { Concept, Message, Hook, Brief } from '@/lib/types'
+import type { Concept, Message, Hook, Brief, Angle } from '@/lib/types'
 
 const STAGE_LABELS: Record<number, string> = {
-  1: 'Concept',
-  2: 'Hooks',
-  3: 'Brief',
+  1: 'Angle',
+  2: 'Package',
 }
 
 export function PlanFlow({
@@ -27,6 +25,7 @@ export function PlanFlow({
 }) {
   const stage = concept.plan_stage ?? 1
   const icp = quakeConfig.icps.find(i => i.id === concept.icp_id)
+  const angle = concept.angle ?? null
 
   return (
     <div className="flex flex-col h-screen">
@@ -43,9 +42,9 @@ export function PlanFlow({
           {icp && <span className="text-xs text-muted-foreground">{icp.name}</span>}
         </div>
 
-        {/* Stage progress */}
+        {/* Stage progress — 2 stages */}
         <div className="flex items-center gap-1 shrink-0">
-          {[1, 2, 3].map(s => (
+          {[1, 2].map(s => (
             <div
               key={s}
               className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-medium transition-colors ${
@@ -76,11 +75,13 @@ export function PlanFlow({
         {stage === 1 && (
           <ConceptChat concept={concept} initialMessages={initialMessages} />
         )}
-        {stage === 2 && (
-          <HooksPanel concept={concept} initialHooks={initialHooks} />
-        )}
-        {stage === 3 && (
-          <BriefBuilder concept={concept} hooks={initialHooks} initialBriefs={initialBriefs} />
+        {stage >= 2 && (
+          <CreativePackage
+            concept={concept}
+            angle={angle}
+            initialHooks={initialHooks}
+            initialBriefs={initialBriefs}
+          />
         )}
       </div>
     </div>
