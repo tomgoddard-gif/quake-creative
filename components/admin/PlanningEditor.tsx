@@ -69,7 +69,8 @@ export function PlanningEditor({ concept, initialVariants }: Props) {
   const [notes, setNotes] = useState(concept.notes ?? '')
   const [savingNotes, setSavingNotes] = useState(false)
 
-  const idea = concept.idea
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const idea = (concept as any).idea
 
   function updateForm(key: string, value: string) {
     setForm(prev => ({ ...prev, [key]: value }))
