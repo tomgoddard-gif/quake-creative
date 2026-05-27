@@ -31,7 +31,8 @@ export function BriefCard({ brief, index }: { brief: Brief; index: number }) {
       const { pdf } = await import('@react-pdf/renderer')
       const { BriefPDF } = await import('./BriefPDF')
       const React = await import('react')
-      const blob = await pdf(React.createElement(BriefPDF, { brief })).toBlob()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const blob = await pdf(React.createElement(BriefPDF, { brief }) as any).toBlob()
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
