@@ -95,6 +95,8 @@ export interface Concept {
   angle_desire: string | null
   core_message: string | null
   angle_id: string | null
+  concept_overview: string | null
+  production_complexity: string | null
   plan_stage: number
   idea_seed: string | null
   campaign: string | null

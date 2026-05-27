@@ -62,6 +62,8 @@ export async function saveConceptFields(
     angle_pain?: string
     angle_desire?: string
     core_message?: string
+    concept_overview?: string
+    production_complexity?: string
     title?: string
     status?: ConceptStatus
     plan_stage?: number

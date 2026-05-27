@@ -1,31 +1,32 @@
 'use client'
 
-import { ConceptChat } from './ConceptChat'
-import { CreativePackage } from './CreativePackage'
+import { AngleSelector } from './AngleSelector'
+import { HooksStage } from './HooksStage'
+import { ConceptOverview } from './ConceptOverview'
+import { ProductionBrief } from './ProductionBrief'
 import { quakeConfig } from '@/lib/client-config/quake'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import type { Concept, Message, Hook, Brief, Angle } from '@/lib/types'
+import type { Concept, Hook, Brief } from '@/lib/types'
 
 const STAGE_LABELS: Record<number, string> = {
   1: 'Angle',
-  2: 'Package',
+  2: 'Hooks',
+  3: 'Concept',
+  4: 'Brief',
 }
 
 export function PlanFlow({
   concept,
-  initialMessages,
   initialHooks,
   initialBriefs,
 }: {
   concept: Concept
-  initialMessages: Message[]
   initialHooks: Hook[]
   initialBriefs: Brief[]
 }) {
   const stage = concept.plan_stage ?? 1
   const icp = quakeConfig.icps.find(i => i.id === concept.icp_id)
-  const angle = concept.angle ?? null
 
   return (
     <div className="flex flex-col h-screen">
@@ -42,9 +43,9 @@ export function PlanFlow({
           {icp && <span className="text-xs text-muted-foreground">{icp.name}</span>}
         </div>
 
-        {/* Stage progress — 2 stages */}
+        {/* Stage progress — 4 stages */}
         <div className="flex items-center gap-1 shrink-0">
-          {[1, 2].map(s => (
+          {([1, 2, 3, 4] as const).map(s => (
             <div
               key={s}
               className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-medium transition-colors ${
@@ -72,17 +73,10 @@ export function PlanFlow({
 
       {/* Stage content */}
       <div className="flex-1 overflow-hidden">
-        {stage === 1 && (
-          <ConceptChat concept={concept} initialMessages={initialMessages} />
-        )}
-        {stage >= 2 && (
-          <CreativePackage
-            concept={concept}
-            angle={angle}
-            initialHooks={initialHooks}
-            initialBriefs={initialBriefs}
-          />
-        )}
+        {stage === 1 && <AngleSelector concept={concept} />}
+        {stage === 2 && <HooksStage concept={concept} initialHooks={initialHooks} />}
+        {stage === 3 && <ConceptOverview concept={concept} />}
+        {stage >= 4 && <ProductionBrief concept={concept} initialBriefs={initialBriefs} />}
       </div>
     </div>
   )

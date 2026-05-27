@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { getConceptById } from '@/lib/data/plans'
-import { getMessages } from '@/lib/data/messages'
 import { getHooks } from '@/lib/data/hooks-data'
 import { getBriefs } from '@/lib/data/briefs-data'
 import { PlanFlow } from '@/components/admin/PlanFlow'
@@ -14,8 +13,7 @@ export default async function PlanSessionPage({
   const concept = await getConceptById(id)
   if (!concept) notFound()
 
-  const [messages, hooks, briefs] = await Promise.all([
-    getMessages(id),
+  const [hooks, briefs] = await Promise.all([
     getHooks(id),
     getBriefs(id),
   ])
@@ -23,7 +21,6 @@ export default async function PlanSessionPage({
   return (
     <PlanFlow
       concept={concept}
-      initialMessages={messages}
       initialHooks={hooks}
       initialBriefs={briefs}
     />
